@@ -115,7 +115,12 @@ export const UserMessage = memo(({ message }: { message: UIMessage }) => {
 						sent in Teams
 					</span>
 				)}
-				<Message value={text} mentionConfigs={mentionConfigs} theme={messageTheme} className='inline' />
+				<Message
+					value={text}
+					mentionConfigs={mentionConfigs}
+					theme={messageTheme}
+					className='flex items-center justify-end'
+				/>
 			</div>
 
 			<div className='flex items-center gap-2'>
