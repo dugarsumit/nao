@@ -1,4 +1,5 @@
 import formbody from '@fastify/formbody';
+import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
 import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import fastify from 'fastify';
@@ -8,11 +9,13 @@ import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
-import { env } from './env';
+import { env, isCloud } from './env';
 import { ensureOrganizationSetup } from './queries/organization.queries';
 import { agentRoutes } from './routes/agent';
 import { authRoutes } from './routes/auth';
 import { chartRoutes } from './routes/chart';
+import { deployRoutes } from './routes/deploy';
+import { githubRoutes } from './routes/github';
 import { imageRoutes } from './routes/image';
 import { slackRoutes } from './routes/slack';
 import { teamsRoutes } from './routes/teams';
@@ -105,6 +108,9 @@ app.register(fastifyRawBody, {
 // Register formbody plugin for Slack interaction payloads (application/x-www-form-urlencoded)
 app.register(formbody);
 
+// Register multipart plugin for file uploads (deploy endpoint)
+app.register(multipart, { limits: { fileSize: 100 * 1024 * 1024 } });
+
 // Register tRPC plugin
 app.register(fastifyTRPCPlugin, {
 	prefix: '/api/trpc',
@@ -154,6 +160,14 @@ app.register(telegramRoutes, {
 
 app.register(whatsappRoutes, {
 	prefix: '/api/webhooks/whatsapp',
+});
+
+app.register(deployRoutes, {
+	prefix: '/api',
+});
+
+app.register(githubRoutes, {
+	prefix: '/api/github',
 });
 
 /**
@@ -206,7 +220,11 @@ if (staticRoot) {
 }
 
 export const startServer = async (opts: { port: number; host: string }) => {
-	await ensureOrganizationSetup();
+	if (isCloud) {
+		// TODO: Implement cloud mode
+	} else {
+		await ensureOrganizationSetup();
+	}
 	startLogCleanup();
 
 	const address = await app.listen({ host: opts.host, port: opts.port });

@@ -143,10 +143,12 @@ export class AgentService {
 		if (!project.path) {
 			throw new HandlerError('BAD_REQUEST', 'Project path does not exist.');
 		}
+		const envVars = await projectQueries.getEnvVars(projectId);
 		return {
 			projectFolder: project.path ?? '',
 			chatId,
 			agentSettings,
+			envVars,
 			queryResults: new Map(),
 		};
 	}
@@ -345,8 +347,8 @@ class AgentManager {
 		const uiMessagesWithResolvedImages = await resolveImageUrls(uiMessagesWithCompaction);
 
 		const memories = await memoryService.safeGetUserMemories(this.chat.userId, this.chat.projectId, this.chat.id);
-		const userRules = getUserRules();
-		const connections = getConnections();
+		const userRules = getUserRules(this._toolContext.projectFolder);
+		const connections = getConnections(this._toolContext.projectFolder);
 		const skills = skillService.getSkills();
 		const basePrompt = renderToMarkdown(SystemPrompt({ memories, userRules, connections, skills, timezone }));
 		const renderedPrompt = provider

@@ -1,5 +1,6 @@
 import type { ImageUploadData } from '@nao/shared/types';
 
+import { noProjectMessage } from '../env';
 import * as chatQueries from '../queries/chat.queries';
 import * as imageQueries from '../queries/image.queries';
 import { agentService } from '../services/agent';
@@ -26,10 +27,7 @@ export const handleAgentRoute = async (opts: HandleAgentMessageInput): Promise<H
 	const { userId, message, messageToEditId, model, mentions, projectId } = opts;
 
 	if (!projectId) {
-		throw new HandlerError(
-			'BAD_REQUEST',
-			'No project configured. Set NAO_DEFAULT_PROJECT_PATH environment variable.',
-		);
+		throw new HandlerError('BAD_REQUEST', noProjectMessage());
 	}
 
 	await agentService.assertBudget(projectId, model);

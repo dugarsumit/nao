@@ -253,6 +253,13 @@
       "when": 1775740835280,
       "tag": "0035_add_project_provider_budget",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1776187665191,
+      "tag": "0036_cloud",
+      "breakpoints": true
     }
   ]
 }

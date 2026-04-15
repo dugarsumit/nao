@@ -85,4 +85,7 @@ export type NewLog = typeof sqliteSchema.log.$inferInsert;
 export type DBMessageImage = typeof sqliteSchema.messageImage.$inferSelect;
 export type NewMessageImage = typeof sqliteSchema.messageImage.$inferInsert;
 
+export type DBApiKey = typeof sqliteSchema.apiKey.$inferSelect;
+export type NewApiKey = typeof sqliteSchema.apiKey.$inferInsert;
+
 export default allSchema as typeof sqliteSchema;
